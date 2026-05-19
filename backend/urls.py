@@ -13,6 +13,9 @@ urlpatterns = [
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
 
+    # Дополнительно для совместимости с Django
+    path("accounts/login/", views.login_view, name="login"),
+
     # Профиль
     path("profile/", views.profile_view, name="profile"),
 

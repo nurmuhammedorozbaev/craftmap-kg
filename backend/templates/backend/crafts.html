@@ -2,25 +2,25 @@
 {% block title %}Ремёсла{% endblock %}
 
 {% block content %}
-<section class="min-h-screen bg-gradient-to-r from-green-100 via-white to-green-200 py-16 px-6">
-  <div class="max-w-7xl mx-auto">
+<section class="min-h-screen bg-gradient-to-r from-green-100 via-white to-green-200 py-12 px-4">
+  <div class="w-full max-w-sm sm:max-w-md lg:max-w-7xl mx-auto">
 
     <!-- Заголовок -->
-    <h1 class="text-4xl font-extrabold text-green-800 text-center mb-4">
+    <h1 class="text-2xl sm:text-4xl font-extrabold text-green-800 text-center mb-4">
       Ремёсла Кыргызстана
     </h1>
-    <p class="text-center text-gray-700 mb-10">
+    <p class="text-center text-gray-700 mb-8 sm:mb-10 text-sm sm:text-base">
       Откройте для себя традиционные ремёсла и мастеров Кыргызстана
     </p>
 
     <!-- 🔍 Фильтры -->
-    <form method="get" class="bg-white p-5 rounded-xl shadow mb-12 flex flex-col md:flex-row gap-4 items-center justify-between border border-green-300">
+    <form method="get" class="bg-white p-5 rounded-xl shadow mb-10 flex flex-col sm:flex-row gap-4 items-center justify-between border border-green-300">
       <input type="text" name="search"
              value="{{ request.GET.search }}"
              placeholder="🔍 Поиск ремесла..."
-             class="w-full md:w-1/3 px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-700 outline-none">
+             class="w-full sm:w-1/3 px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-700 outline-none text-sm sm:text-base">
 
-      <select name="category" class="px-4 py-2 border border-green-300 rounded-lg">
+      <select name="category" class="w-full sm:w-auto px-4 py-2 border border-green-300 rounded-lg text-sm sm:text-base">
         <option value="">Все категории</option>
         {% for category in categories %}
           <option value="{{ category.name }}" {% if request.GET.category == category.name %}selected{% endif %}>
@@ -29,7 +29,7 @@
         {% endfor %}
       </select>
 
-      <select name="region" class="px-4 py-2 border border-green-300 rounded-lg">
+      <select name="region" class="w-full sm:w-auto px-4 py-2 border border-green-300 rounded-lg text-sm sm:text-base">
         <option value="">Все регионы</option>
         {% for region in regions %}
           <option value="{{ region.name }}" {% if request.GET.region == region.name %}selected{% endif %}>
@@ -38,49 +38,49 @@
         {% endfor %}
       </select>
 
-      <button type="submit" class="bg-green-800 text-white px-6 py-2 rounded-lg hover:bg-green-900 transition">
+      <button type="submit" class="w-full sm:w-auto bg-green-800 text-white px-6 py-2 rounded-lg hover:bg-green-900 transition">
         Применить
       </button>
-      <a href="{% url 'backend:crafts' %}" class="bg-gray-200 text-green-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition">
+      <a href="{% url 'backend:crafts' %}" class="w-full sm:w-auto text-center bg-gray-200 text-green-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition">
         Сбросить
       </a>
     </form>
 
     <!-- 🧾 Карточки -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
       {% for craft in crafts %}
         <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl hover:-translate-y-1 transition duration-300 group border border-green-200">
           {% if craft.image %}
           <div class="overflow-hidden">
             <img src="{{ craft.image.url }}" alt="{{ craft.name }}"
-                 class="w-full h-52 object-cover group-hover:scale-110 transition duration-500">
+                 class="w-full h-40 sm:h-52 object-cover group-hover:scale-110 transition duration-500">
           </div>
           {% endif %}
 
           <div class="p-5">
-            <h3 class="text-xl font-bold text-green-800 mb-2">{{ craft.name }}</h3>
+            <h3 class="text-lg sm:text-xl font-bold text-green-800 mb-2">{{ craft.name }}</h3>
 
             <span class="inline-block bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full mb-2">
               {{ craft.category.name|default:"Без категории" }}
             </span>
 
-            <p class="text-gray-700 text-sm">📍 {{ craft.region.name|default:"Регион не указан" }}</p>
-            <p class="text-gray-700 text-sm mb-2">
+            <p class="text-gray-700 text-xs sm:text-sm">📍 {{ craft.region.name|default:"Регион не указан" }}</p>
+            <p class="text-gray-700 text-xs sm:text-sm mb-2">
               👤 {% if craft.masters.all %}{{ craft.masters.first.name|default:"Не указан" }}{% else %}Не указан{% endif %}
             </p>
 
-            <p class="text-gray-600 text-sm mb-4">
+            <p class="text-gray-600 text-xs sm:text-sm mb-4">
               {{ craft.description|default:"Описание отсутствует"|truncatewords:15 }}
             </p>
 
             <a href="{% url 'backend:craft_detail' craft.id %}"
-               class="block text-center bg-green-800 text-white py-2 rounded-lg font-semibold hover:bg-green-900 transition">
+               class="block w-full text-center bg-green-800 text-white py-2 rounded-lg font-semibold hover:bg-green-900 transition">
               Подробнее
             </a>
           </div>
         </div>
       {% empty %}
-        <p class="text-center text-gray-600 col-span-3 italic">
+        <p class="text-center text-gray-600 col-span-full italic">
           Ремёсла пока не добавлены.
         </p>
       {% endfor %}
