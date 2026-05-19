@@ -1,35 +1,34 @@
 import os
 from pathlib import Path
-import dj_database_url  # для подключения PostgreSQL на Render
+import dj_database_url
 
-# 📁 Базовая директория проекта
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# 🔐 Секретный ключ — хранится в переменных окружения
+# 🔐 Секретный ключ
 SECRET_KEY = os.environ.get("SECRET_KEY", "unsafe-secret-key")
 
 # ⚙️ Режим отладки
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-# 🌐 Разрешённые хосты
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".onrender.com"]
+# 🌐 Хосты
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".onrender.com", ".railway.app"]
 
-# 📦 Установленные приложения
+# 📦 Приложения
 INSTALLED_APPS = [
     "django.contrib.admin",
-    "django.contrib.auth",          # кастомный User работает через AUTH_USER_MODEL
+    "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework",               # если используешь DRF
-    "backend",                      # твоё приложение
+    "rest_framework",
+    "backend",
 ]
 
 # 🧱 Middleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # для статики
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -38,11 +37,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# 📍 Основные настройки проекта
 ROOT_URLCONF = "craftmap.urls"
 WSGI_APPLICATION = "craftmap.wsgi.application"
 
-# 🗄️ База данных — SQLite локально, PostgreSQL на Render
+# 🗄️ База данных
 DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
@@ -72,7 +70,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
-        }, 
+        },
     },
 ]
 
