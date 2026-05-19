@@ -8,10 +8,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "unsafe-secret-key")
 
 # ⚙️ Режим отладки
-DEBUG = os.environ.get("DEBUG", "True") == "True"
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 # 🌐 Хосты
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".onrender.com", ".railway.app"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".onrender.com"]
 
 # 📦 Приложения
 INSTALLED_APPS = [
@@ -40,12 +40,12 @@ MIDDLEWARE = [
 ROOT_URLCONF = "craftmap.urls"
 WSGI_APPLICATION = "craftmap.wsgi.application"
 
-# 🗄️ База данных
+# 🗄️ База данных (Postgres на Render)
 DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
-        ssl_require=False
+        ssl_require=True
     )
 }
 
