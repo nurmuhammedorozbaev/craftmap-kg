@@ -1,0 +1,70 @@
+{% extends 'backend/base.html' %}
+{% block title %}Избранные ремёсла{% endblock %}
+
+{% block content %}
+<section class="min-h-screen bg-gradient-to-r from-green-100 via-white to-green-200 py-16 px-6">
+  <div class="max-w-7xl mx-auto">
+
+    <!-- Заголовок -->
+    <h1 class="text-4xl font-extrabold text-green-800 text-center mb-4">
+      Мои избранные ремёсла
+    </h1>
+    <p class="text-center text-gray-700 mb-10">
+      Здесь собраны ремёсла, которые вы добавили в избранное.
+    </p>
+
+    <!-- 🧾 Карточки -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for favorite in favorites %}
+        {% with craft=favorite.craft %}
+        <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl hover:-translate-y-1 transition duration-300 group border border-green-200">
+          {% if craft.image %}
+          <div class="overflow-hidden">
+            <img src="{{ craft.image.url }}" alt="{{ craft.name }}"
+                 class="w-full h-52 object-cover group-hover:scale-110 transition duration-500">
+          </div>
+          {% endif %}
+
+          <div class="p-5">
+            <h3 class="text-xl font-bold text-green-800 mb-2">{{ craft.name }}</h3>
+
+            <span class="inline-block bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full mb-2">
+              {{ craft.category.name|default:"Без категории" }}
+            </span>
+
+            <p class="text-gray-700 text-sm">📍 {{ craft.region.name|default:"Регион не указан" }}</p>
+            <p class="text-gray-700 text-sm mb-2">
+              👤 {% for master in craft.masters.all %}
+                    {{ master.name }}{% if not forloop.last %}, {% endif %}
+                 {% empty %}Не указан{% endfor %}
+            </p>
+
+            <p class="text-gray-600 text-sm mb-4">
+              {{ craft.description|default:"Описание отсутствует"|truncatewords:15 }}
+            </p>
+
+            <div class="flex gap-3">
+              <a href="{% url 'backend:craft_detail' craft.id %}"
+                 class="flex-1 text-center bg-green-800 text-white py-2 rounded-lg font-semibold hover:bg-green-900 transition">
+                Подробнее
+              </a>
+              <form method="post" action="{% url 'backend:remove_favorite' craft.id %}" class="flex-1">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="w-full text-center bg-red-600 text-white py-2 rounded-lg font-semibold hover:bg-red-700 transition">
+                  Удалить
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endwith %}
+      {% empty %}
+        <p class="text-center text-gray-600 col-span-3 italic">
+          У вас пока нет избранных ремёсел.
+        </p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

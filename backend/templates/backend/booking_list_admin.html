@@ -1,0 +1,61 @@
+{% extends 'backend/base.html' %}
+{% block title %}Управление бронированиями{% endblock %}
+
+{% block content %}
+<section class="min-h-screen bg-gradient-to-r from-green-100 via-white to-green-200 py-12 px-6">
+  <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-8 border border-green-300">
+    <h2 class="text-3xl font-bold text-green-800 mb-6 text-center">Список бронирований</h2>
+
+    {% if bookings %}
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-green-50 text-green-800">
+              <th class="p-3">Пользователь</th>
+              <th class="p-3">Ремесло</th>
+              <th class="p-3">Дата</th>
+              <th class="p-3">Комментарий</th>
+              <th class="p-3">Статус</th>
+              <th class="p-3">Действие</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for booking in bookings %}
+            <tr class="border-b hover:bg-green-50 transition">
+              <td class="p-3 font-semibold">{{ booking.user.username }}</td>
+              <td class="p-3">{{ booking.craft.name }}</td>
+              <td class="p-3">{{ booking.date|date:"d.m.Y H:i" }}</td>
+              <td class="p-3">{{ booking.notes|default:"-" }}</td>
+              <td class="p-3">
+                {% if booking.status == "approved" %}
+                  <span class="bg-green-200 text-green-800 px-3 py-1 rounded-lg font-semibold">Одобрено</span>
+                {% elif booking.status == "pending" %}
+                  <span class="bg-yellow-200 text-yellow-800 px-3 py-1 rounded-lg font-semibold">Ожидание</span>
+                {% elif booking.status == "completed" %}
+                  <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg font-semibold">Завершено</span>
+                {% endif %}
+              </td>
+              <td class="p-3">
+                <form method="post" action="{% url 'backend:update_booking_status' booking.id %}" class="flex items-center gap-2">
+                  {% csrf_token %}
+                  <select name="status" class="border rounded px-2 py-1 text-sm">
+                    <option value="pending" {% if booking.status == "pending" %}selected{% endif %}>Ожидание</option>
+                    <option value="approved" {% if booking.status == "approved" %}selected{% endif %}>Одобрено</option>
+                    <option value="completed" {% if booking.status == "completed" %}selected{% endif %}>Завершено</option>
+                  </select>
+                  <button type="submit" class="bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800 text-sm">
+                    Сохранить
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-gray-500 italic text-center">Бронирований пока нет.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
