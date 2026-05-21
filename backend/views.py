@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
 from django.views.decorators.http import require_POST
+from django.contrib import messages
 from datetime import timedelta
 from django.db.models import Avg
 
@@ -68,6 +69,7 @@ def craft_detail_view(request, pk):
                 rating=int(rating),
                 is_approved=False  # админ потом одобрит
             )
+            messages.info(request, "Ваш отзыв отправлен и ожидает модерации.")
             return redirect("backend:craft_detail", pk=pk)
 
     # Средний рейтинг
@@ -87,9 +89,11 @@ def register_view(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Профиль создаётся сигналом
             login(request, user)
+            messages.success(request, "Регистрация прошла успешно! Добро пожаловать 👋")
             return redirect("backend:home")
+        else:
+            messages.error(request, "Ошибка регистрации. Проверьте введённые данные.")
     else:
         form = CustomUserCreationForm()
     return render(request, "backend/register.html", {"form": form})
@@ -104,8 +108,10 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            messages.success(request, "Вы успешно вошли в систему ✅")
             return redirect("backend:home")
         else:
+            messages.error(request, "Неверные данные для входа.")
             return render(request, "backend/login.html", {"error": "Неверные данные"})
     return render(request, "backend/login.html")
 
@@ -113,6 +119,7 @@ def login_view(request):
 # --- Выход ---
 def logout_view(request):
     logout(request)
+    messages.info(request, "Вы вышли из системы.")
     return redirect("backend:home")
 
 
@@ -155,6 +162,7 @@ def booking_view(request, craft_id):
             notes=request.POST.get("notes", ""),
             status="pending"
         )
+        messages.success(request, f"Заявка на {craft.name} отправлена и ожидает подтверждения!")
         return redirect("backend:profile")
     return render(request, "backend/booking_form.html", {"craft": craft})
 
@@ -171,6 +179,7 @@ def add_favorite(request, craft_id):
     if request.method == "POST":
         craft = get_object_or_404(Craft, id=craft_id)
         Favorite.objects.get_or_create(user=request.user, craft=craft)
+        messages.info(request, f"{craft.name} добавлен в избранное ⭐")
     return redirect("backend:favorites")
 
 
@@ -179,6 +188,7 @@ def remove_favorite(request, craft_id):
     if request.method == "POST":
         craft = get_object_or_404(Craft, id=craft_id)
         Favorite.objects.filter(user=request.user, craft=craft).delete()
+        messages.warning(request, f"{craft.name} удалён из избранного ❌")
     return redirect("backend:favorites")
 
 
@@ -217,5 +227,6 @@ def update_booking_status(request, booking_id):
     if new_status in dict(Booking.STATUS_CHOICES).keys():
         booking.status = new_status
         booking.save()
+        messages.success(request, f"Статус заявки пользователя {booking.user.username} обновлён: {booking.status}")
 
     return redirect("backend:booking_list_admin")

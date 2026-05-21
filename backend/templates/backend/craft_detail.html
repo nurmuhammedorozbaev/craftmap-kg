@@ -13,7 +13,7 @@
 
         <ul class="space-y-2 text-sm sm:text-base text-gray-700">
           <li>📍 <span class="font-medium">Регион:</span> {{ craft.region.name|default:"Не указан" }}</li>
-          <li>👤 <span class="font-medium">Мастер:</span> {% if craft.masters.all %}{{ craft.masters.first.name|default:"Не указан" }}{% else %}Не указан{% endif %}</li>
+          <li>👤 <span class="font-medium">Мастер:</span> {% if craft.masters.exists %}{{ craft.masters.first.name }}{% else %}Не указан{% endif %}</li>
           <li>🎨 <span class="font-medium">Категория:</span> {{ craft.category.name|default:"Без категории" }}</li>
           <li>🗣 <span class="font-medium">Язык:</span> Кыргызский</li>
           <li>🕘 <span class="font-medium">Время работы:</span> 09:00 - 18:00</li>
@@ -96,3 +96,56 @@
                       <path d="M10 15l-5.878 3.09L5.64 12.18.64 8.91l6.09-.89L10 2l3.27 6.02 6.09.89-5 3.27 1.52 5.91z"/>
                     </svg>
                   {% else %}
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-300 fill-current" viewBox="0 0 20 20">
+                      <path d="M10 15l-5.878 3.09L5.64 12.18.64 8.91l6.09-.89L10 2l3.27 6.02 6.09.89-5 3.27 1.52 5.91z"/>
+                    </svg>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <p class="text-gray-700 text-sm sm:text-base">{{ review.text }}</p>
+              <p class="text-xs text-gray-500 mt-2">Автор: {{ review.user.username }} | {{ review.created_at|date:"d.m.Y" }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-gray-600 italic">Отзывов пока нет.</p>
+      {% endif %}
+
+      <!-- Форма добавления отзыва -->
+      {% if request.user.is_authenticated %}
+        <form method="post" class="mt-6 bg-green-50 p-4 rounded-lg border border-green-200">
+          {% csrf_token %}
+          <textarea name="text" rows="3" placeholder="Ваш отзыв..." class="w-full border border-green-300 rounded-lg p-2 mb-3"></textarea>
+          <select name="rating" class="w-full border border-green-300 rounded-lg p-2 mb-3">
+            <option value="5">5 ⭐</option>
+            <option value="4">4 ⭐</option>
+            <option value="3">3 ⭐</option>
+            <option value="2">2 ⭐</option>
+            <option value="1">1 ⭐</option>
+          </select>
+          <button type="submit" class="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition">
+            Оставить отзыв
+          </button>
+        </form>
+      {% else %}
+        <p class="text-gray-600 italic mt-4">Чтобы оставить отзыв, войдите в систему.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const map = L.map("map").setView([{{ craft.latitude|default:41.426 }}, {{ craft.longitude|default:75.991 }}], 7);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    {% if craft.latitude and craft.longitude %}
+      L.marker([{{ craft.latitude }}, {{ craft.longitude }}])
+        .addTo(map)
+        .bindPopup("{{ craft.name }} — {{ craft.region.name }}");
+    {% endif %}
+  });
+</script>
+{% endblock %}
